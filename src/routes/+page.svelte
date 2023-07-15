@@ -1,7 +1,45 @@
 <script lang="ts">
+  import axios from "axios";
+  import type { Location } from "../services/Location";
   import WeatherService from "../services/weather.service";
+  import Weather from "./Weather.svelte";
 
-  const weatherPromise = WeatherService.getCurrent();
+  let place = "Paris";
+  let location: Location = { latitude: "53.1", longitude: "-0.13" };
+  $: weatherPromise = WeatherService.getCurrent(location);
+
+  function changeLocation(): void {
+    getLocation();
+  }
+
+  interface LocationResponse {
+    latitude: number;
+    longitude: number;
+  }
+
+  function getLocation() {
+    const params = {
+      access_key: import.meta.env.VITE_LOCATION_API_KEY,
+      query: place,
+    };
+    axios
+      .get<{ data: LocationResponse[] }>(
+        "http://api.positionstack.com/v1/forward",
+        {
+          params,
+        }
+      )
+      .then((response) => {
+        const firstElement = response.data.data[0];
+        location = {
+          latitude: firstElement?.latitude.toString(),
+          longitude: firstElement?.longitude.toString(),
+        };
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 </script>
 
 <svelte:head>
@@ -12,11 +50,14 @@
 <div class="text-column">
   <h1>Weather</h1>
 
+  Location :
+  <input type="text" bind:value={place} /><button on:click={changeLocation}
+    >Submit</button
+  >
   {#await weatherPromise}
     <p>...waiting</p>
   {:then weather}
-    <p>{weather.text}</p>
-    <img src={weather.icon} alt="Icon" />
+    <Weather {weather} />
   {:catch error}
     <p style="color: red">{error.message}</p>
   {/await}

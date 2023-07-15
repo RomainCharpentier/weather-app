@@ -1,28 +1,32 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
-import type { Weather } from './Weather';
+import axios, { type AxiosRequestConfig } from "axios";
+import type { Weather } from "./Weather";
+import type { Location } from "./Location";
+
+interface WeatherApiResponse {
+  current: {
+    condition: Weather;
+  };
+}
 
 // Définir la configuration de base de votre API
 const apiConfig: AxiosRequestConfig = {
-  baseURL: 'https://weatherapi-com.p.rapidapi.com',
-  params: { q: "53.1,-0.13" },
+  baseURL: "https://weatherapi-com.p.rapidapi.com",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     "X-RapidAPI-Key": import.meta.env.VITE_WEATHER_API_KEY,
-    "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"
+    "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com",
   },
 };
-
-interface WeatherApiResponse {
-    current: {
-        condition: Weather;
-    }
-}
 
 const api = axios.create(apiConfig);
 
 const API = {
-  getCurrent: (): Promise<Weather> => api.get<WeatherApiResponse>('/current.json')
-    .then(response => response.data.current.condition)
+  getCurrent: (location: Location): Promise<Weather> =>
+    api
+      .get<WeatherApiResponse>("/current.json", {
+        params: { q: `${location.latitude},${location.longitude}` },
+      })
+      .then((response) => response.data.current.condition),
 };
 
 export default API;
