@@ -13,27 +13,20 @@
   }
 
   interface LocationResponse {
-    latitude: number;
-    longitude: number;
+    lat: string;
+    lon: string;
   }
 
   function getLocation() {
-    const params = {
-      access_key: import.meta.env.VITE_LOCATION_API_KEY,
-      query: place,
-    };
     axios
-      .get<{ data: LocationResponse[] }>(
-        "http://api.positionstack.com/v1/forward",
-        {
-          params,
-        }
-      )
+      .get<LocationResponse[]>("https://geocode.maps.co/search", {
+        params: { q: place },
+      })
       .then((response) => {
-        const firstElement = response.data.data[0];
+        const firstElement = response.data[0];
         location = {
-          latitude: firstElement?.latitude.toString(),
-          longitude: firstElement?.longitude.toString(),
+          latitude: firstElement?.lat,
+          longitude: firstElement?.lon,
         };
       })
       .catch((error) => {
