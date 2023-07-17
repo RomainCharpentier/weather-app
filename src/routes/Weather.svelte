@@ -5,7 +5,7 @@
 </script>
 
 <div class="container">
-  <p>{weather.text}</p>
+  <p>{weather.text} {weather.temperature}°C</p>
   <img src={weather.icon} alt="Icon" />
 </div>
 

@@ -5,7 +5,10 @@
   import Weather from "./Weather.svelte";
 
   let place = "Paris";
-  let location: Location = { latitude: "53.1", longitude: "-0.13" };
+  let location: Location = {
+    latitude: "48.8588897",
+    longitude: "2.3200410217200766",
+  };
   $: weatherPromise = WeatherService.getCurrent(location);
 
   function changeLocation(): void {

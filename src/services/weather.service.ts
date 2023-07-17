@@ -4,7 +4,12 @@ import type { Location } from "./Location";
 
 interface WeatherApiResponse {
   current: {
-    condition: Weather;
+    condition: {
+      code: number;
+      icon: string;
+      text: string;
+    };
+    temp_c: number;
   };
 }
 
@@ -26,7 +31,10 @@ const API = {
       .get<WeatherApiResponse>("/current.json", {
         params: { q: `${location.latitude},${location.longitude}` },
       })
-      .then((response) => response.data.current.condition),
+      .then((response) => ({
+        ...response.data.current.condition,
+        temperature: response.data.current.temp_c,
+      })),
 };
 
 export default API;
