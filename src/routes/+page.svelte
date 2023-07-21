@@ -6,6 +6,7 @@
 
   let place = "Paris";
   let location: Location = {
+    name: "Paris, Ile-de-France, Metropolitan France, France",
     latitude: "48.8588897",
     longitude: "2.3200410217200766",
   };
@@ -18,6 +19,7 @@
   interface LocationResponse {
     lat: string;
     lon: string;
+    display_name: string;
   }
 
   function getLocation() {
@@ -28,6 +30,7 @@
       .then((response) => {
         const firstElement = response.data[0];
         location = {
+          name: firstElement?.display_name,
           latitude: firstElement?.lat,
           longitude: firstElement?.lon,
         };
@@ -43,18 +46,30 @@
   <meta name="description" content="Home page" />
 </svelte:head>
 
-<div class="text-column">
+<div class="container">
   <h1>Weather</h1>
 
-  Location :
-  <input type="text" bind:value={place} /><button on:click={changeLocation}
-    >Submit</button
-  >
+  <form on:submit|preventDefault={changeLocation}>
+    <label>
+      Location
+      <input bind:value={place} />
+    </label>
+
+    <button on:click>Submit</button>
+  </form>
+
   {#await weatherPromise}
     <p>...waiting</p>
   {:then weather}
+    <h4>{location.name}</h4>
     <Weather {weather} />
   {:catch error}
     <p style="color: red">{error.message}</p>
   {/await}
 </div>
+
+<style>
+  .container {
+    text-align: center;
+  }
+</style>

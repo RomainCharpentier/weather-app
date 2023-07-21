@@ -11,6 +11,7 @@
 
 <style>
   .container {
+    display: inline-block;
     width: fit-content;
     text-align: center;
     box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, 0.2);
