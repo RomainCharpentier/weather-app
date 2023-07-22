@@ -10,6 +10,8 @@ interface WeatherApiResponse {
       text: string;
     };
     temp_c: number;
+    feelslike_c: number;
+    wind_kph: number;
   };
 }
 
@@ -34,6 +36,7 @@ const API = {
       .then((response) => ({
         ...response.data.current.condition,
         temperature: response.data.current.temp_c,
+        wind: response.data.current.wind_kph,
       })),
 };
 

@@ -25,29 +25,38 @@
 </svelte:head>
 
 <div class="container">
-  <h1>Weather</h1>
+  <div class="subcontainer">
+    <h1>Weather</h1>
 
-  <form on:submit|preventDefault={changeLocation}>
-    <label>
-      Location
-      <input bind:value={searchPlace} />
-    </label>
+    <form on:submit|preventDefault={changeLocation}>
+      <label>
+        Location
+        <input bind:value={searchPlace} />
+      </label>
 
-    <button on:click>Submit</button>
-  </form>
+      <button on:click>Submit</button>
+    </form>
 
-  {#await weatherPromise}
-    <p>...waiting</p>
-  {:then weather}
-    <h4>{actualLocation.name}</h4>
-    <Weather {weather} />
-  {:catch error}
-    <p style="color: red">{error.message}</p>
-  {/await}
+    {#await weatherPromise}
+      <p>...waiting</p>
+    {:then weather}
+      <h4>{actualLocation.name}</h4>
+      <Weather {weather} />
+    {:catch error}
+      <p style="color: red">{error.message}</p>
+    {/await}
+  </div>
 </div>
 
 <style>
   .container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
     text-align: center;
+  }
+  .subcontainer {
+    width: 50%;
+    min-width: 300px;
   }
 </style>

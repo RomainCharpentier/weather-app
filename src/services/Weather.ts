@@ -3,4 +3,5 @@ export interface Weather {
   icon: string;
   text: string;
   temperature: number;
+  wind: number;
 }
