@@ -3,6 +3,7 @@
   import WeatherService from "../services/weather.service";
   import LocationService from "../services/location.service";
   import Weather from "./Weather.svelte";
+  import WeatherForecast from "./WeatherForecast.svelte";
 
   let searchPlace = "Paris";
   let actualLocation: Location = {
@@ -10,7 +11,8 @@
     latitude: "48.8588897",
     longitude: "2.3200410217200766",
   };
-  $: weatherPromise = WeatherService.getCurrent(actualLocation);
+  $: currentWeatherPromise = WeatherService.getCurrent(actualLocation);
+  $: forecastWeatherPromise = WeatherService.getForecast(actualLocation);
 
   function changeLocation(): void {
     LocationService.getLocation(searchPlace).then(
@@ -37,11 +39,22 @@
       <button on:click>Submit</button>
     </form>
 
-    {#await weatherPromise}
+    {#await currentWeatherPromise}
       <p>...waiting</p>
     {:then weather}
-      <h4>{actualLocation.name}</h4>
+      <h4><i class="fa-solid fa-location-dot" /> {actualLocation.name}</h4>
       <Weather {weather} />
+    {:catch error}
+      <p style="color: red">{error.message}</p>
+    {/await}
+    {#await forecastWeatherPromise}
+      <p>...waiting</p>
+    {:then weather}
+      <div style="display: flex">
+        {#each weather as w}
+          <WeatherForecast weather={w} />
+        {/each}
+      </div>
     {:catch error}
       <p style="color: red">{error.message}</p>
     {/await}

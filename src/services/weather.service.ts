@@ -2,7 +2,7 @@ import axios, { type AxiosRequestConfig } from "axios";
 import type { Weather } from "./Weather";
 import type { Location } from "./Location";
 
-interface WeatherApiResponse {
+interface WeatherCurrentResponse {
   current: {
     condition: {
       code: number;
@@ -15,7 +15,25 @@ interface WeatherApiResponse {
   };
 }
 
-// Définir la configuration de base de votre API
+interface WeatherForecastResponse {
+  forecast: {
+    forecastday: [
+      {
+        date: string;
+        day: {
+          condition: {
+            code: number;
+            icon: string;
+            text: string;
+          };
+          avgtemp_c: number;
+          maxwind_kph: number;
+        };
+      }
+    ];
+  };
+}
+
 const apiConfig: AxiosRequestConfig = {
   baseURL: "https://weatherapi-com.p.rapidapi.com",
   headers: {
@@ -30,14 +48,28 @@ const api = axios.create(apiConfig);
 const API = {
   getCurrent: (location: Location): Promise<Weather> =>
     api
-      .get<WeatherApiResponse>("/current.json", {
+      .get<WeatherCurrentResponse>("/current.json", {
         params: { q: `${location.latitude},${location.longitude}` },
       })
       .then((response) => ({
         ...response.data.current.condition,
+        date: "today",
         temperature: response.data.current.temp_c,
         wind: response.data.current.wind_kph,
       })),
+  getForecast: (location: Location): Promise<Weather[]> =>
+    api
+      .get<WeatherForecastResponse>("/forecast.json", {
+        params: { q: `${location.latitude},${location.longitude}`, days: "3" },
+      })
+      .then((response) =>
+        response.data.forecast.forecastday.map((weather) => ({
+          ...weather.day.condition,
+          date: weather.date,
+          temperature: weather.day.avgtemp_c,
+          wind: weather.day.maxwind_kph,
+        }))
+      ),
 };
 
 export default API;
